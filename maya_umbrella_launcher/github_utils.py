@@ -1,31 +1,30 @@
 import requests
 import urllib3
 
-from maya_umbrella_launcher import constant as const
-
 urllib3.disable_warnings()
 
 
-def get_latest_tag(owner, repo):
+def get_latest_release(owner, repo):
     """
     获取仓库的最新release
     Return:
-        返回一个字典，包含键:
-            - name 为版本名称
-            - zipball_url 为zip包文件的url地址
+        返回一个字典，包含最新发布的json信息，格式如下:
+            - tag_name 版本名
+            - ['assets'][0]['browser_download_url'] 最新版zip包文件的url地址
     """
-    url = f'https://api.github.com/repos/{owner}/{repo}/tags'
+
+    url = f'https://api.github.com/repos/{owner}/{repo}/releases/latest'
     response = requests.get(url)
     if response.status_code == 200:
         tags = response.json()
         if tags:
-            return tags[0]
+            return tags
     return False
 
 
 def download_release_files(file_url, file_save_path):
     """
-    下载release文件
+    下载github release文件
     """
     try:
         with requests.get(file_url, stream=True) as r:
@@ -37,10 +36,3 @@ def download_release_files(file_url, file_save_path):
     except Exception as e:
         print(e)
         return False
-
-
-if __name__ == '__main__':
-    # for test
-    latest_tag = get_latest_tag(owner=const.USER_NAME, repo=const.REPO_NAME)
-    download_release_files(file_url=latest_tag['zipball_url'],
-                           file_save_path=fr'D:\test\{const.REPO_NAME}_{latest_tag["name"]}.zip')

@@ -1,3 +1,4 @@
+import dayu_widgets as dy
 from PySide2 import QtWidgets, QtCore
 
 
@@ -49,3 +50,39 @@ class CommonWidget(QtWidgets.QWidget, WidgetMixin):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         WidgetMixin.__init__(self)
+
+
+def question_box(text, parent=None):
+    """
+    显示询问框
+    """
+    answer = QtWidgets.QMessageBox.question(parent,
+                                            'Confirm?',
+                                            text,
+                                            QtWidgets.QMessageBox.Yes |
+                                            QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No,
+                                            )
+    if answer != QtWidgets.QMessageBox.Yes:
+        return False
+    return True
+
+
+def show_message(text, duration=3.0, typ='info', parent=None):
+    """
+    显示dy.MMessage消息框
+    Args:
+        text(unicode): 显示的消息文字
+        duration(float): 显示消息的持续时间，单位为秒
+        typ(str): 显示的消息框类型，支持参数有 info, success, warning, error
+        parent(QObject): 父级
+    """
+    msg = getattr(dy.MMessage, typ)(text=text, duration=duration, parent=parent)
+    msg.show()
+
+
+def show_center_messages(text, duration=3.0, typ='info', parent=None):
+    """
+    显示dy.MToast消息框
+    """
+    msg = getattr(dy.MToast, typ)(text=text, duration=duration, parent=parent)
+    msg.show()
