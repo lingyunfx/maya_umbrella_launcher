@@ -8,7 +8,7 @@ from maya_umbrella_launcher import translator as tr
 from maya_umbrella_launcher import constant as const
 from maya_umbrella_launcher.github_utils import get_latest_release, download_release_files
 from maya_umbrella_launcher.filesystem import (create_folder_if_not_exist, extract_zip, validate_folder_exist,
-                                               get_maya_app_path)
+                                               get_maya_app_path, get_maya_module_folder)
 
 
 def get_plugin_latest_version():
@@ -111,12 +111,39 @@ def get_python_path_env():
         return False
 
     envs_copy = os.environ.copy()
-    envs_copy['PYTHONPATH'] = envs_copy.get('PYTHONPATH') + f';{script_path}'
+    envs_copy['PYTHONPATH'] = envs_copy.get('PYTHONPATH', '') + f';{script_path}'
     return envs_copy
 
 
 def launch_maya(maya_path, envs):
     sp.Popen(maya_path, env=envs, cwd=os.path.dirname(maya_path))
+
+
+def install_to_maya(maya_version):
+    module_folder = get_maya_module_folder(version_number=maya_version)
+    if not validate_folder_exist(module_folder):
+        return False
+
+    script_folder = get_script_folder()
+    if not script_folder:
+        return False
+
+    script_folder = os.path.dirname(script_folder)
+
+    mod_file = os.path.join(module_folder, 'maya_umbrella.mod')
+
+    if os.path.isfile(mod_file):
+        return logger.warning(tr.path_already_exists.text.format(mod_file))
+
+    with open(mod_file, 'w') as f:
+        f.write(f'+ maya_umbrella any {script_folder}\n')
+
+
+def uninstall_from_maya(maya_version):
+    module_folder = get_maya_module_folder(version_number=maya_version)
+    mod_file = os.path.join(module_folder, 'maya_umbrella.mod')
+    if os.path.isfile(mod_file):
+        os.remove(mod_file)
 
 
 if __name__ == '__main__':

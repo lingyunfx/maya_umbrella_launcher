@@ -3,7 +3,6 @@ import logging
 
 
 def get_logger():
-    print('xxx log setup')
     _logger = logging.getLogger('maya_umbrella_launcher')
     _logger.setLevel(logging.DEBUG)
 

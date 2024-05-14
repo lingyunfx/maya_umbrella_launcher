@@ -10,7 +10,8 @@ from maya_umbrella_launcher.filesystem import get_installed_maya_versions, get_m
 from maya_umbrella_launcher.common_widgets import (CommonWidget, CommonDialog, question_box, show_message,
                                                    show_center_messages)
 from maya_umbrella_launcher.core import (get_plugin_folder, set_plugin_folder, get_versions, get_plugin_latest_version,
-                                         download_plugin, get_maya_app_path, launch_maya, get_python_path_env)
+                                         download_plugin, get_maya_app_path, launch_maya, get_python_path_env,
+                                         install_to_maya, uninstall_from_maya)
 
 
 class MainUI(CommonWidget):
@@ -185,11 +186,31 @@ class InstallerWidget(CommonWidget):
         self.mod_folder_line.setReadOnly(True)
 
     def connect_command(self):
+        self.install_bt.clicked.connect(self.install_bt_clicked)
+        self.remove_bt.clicked.connect(self.remove_bt_clicked)
         self.version_cb.currentTextChanged.connect(self.version_cb_changed)
 
     def version_cb_changed(self, version_number):
         if version_number:
             self.mod_folder_line.setText(get_maya_module_folder(version_number))
+
+    def install_bt_clicked(self):
+        maya_version = self.version_cb.currentText()
+        if not maya_version:
+            return
+
+        if install_to_maya(maya_version):
+            show_message(text=tr.install_success.text, typ='success', parent=self)
+        else:
+            show_message(text=tr.unable_found_script.text, typ='error', parent=self)
+
+    def remove_bt_clicked(self):
+        maya_version = self.version_cb.currentText()
+        if not maya_version:
+            return
+
+        uninstall_from_maya(maya_version)
+        show_message(text=tr.uninstall_success.text, typ='success', parent=self)
 
 
 class SettingDialog(CommonDialog):

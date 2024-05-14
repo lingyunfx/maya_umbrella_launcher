@@ -80,7 +80,7 @@ plugin_folder_label = TranslatorText('插件目录', 'Plug-in Folder')
 plugin_version_label = TranslatorText('插件版本', 'Plug-in Version')
 
 
-# message translation
+# text translation
 no_plugin_folder = TranslatorText('请先指定插件目录', 'Please specify the plugin folder first')
 path_not_exists = TranslatorText('路径不存在: {0}', 'Path does not exist: {0}')
 path_already_exists = TranslatorText('路径已存在: {0}', 'Path already exists: {0}')
@@ -91,5 +91,15 @@ downloading = TranslatorText('正在下载...', 'Downloading...')
 download_failed = TranslatorText('下载失败', 'Download failed')
 download_success = TranslatorText('下载成功', 'Download successful')
 unable_found_script = TranslatorText('找不到脚本路径，请设置插件路径，然后下载插件!',
-                                     'Cannot find the script path, please set the plugin path and then download the plugin!')
+                                     'Cannot find the script path, please set the plugin path first!')
 unable_found_maya = TranslatorText('找不到Maya版本: {0}', 'Cannot find Maya version: {0}')
+install_success = TranslatorText('安装成功', 'Installation successful')
+uninstall_success = TranslatorText('卸载成功', 'Uninstall successful')
+install_failed = TranslatorText('安装失败', 'Installation failed')
+
+command_description = TranslatorText('这是一个命令行模式', 'This is a command line mode')
+specify_folder = TranslatorText('请指定一个存放插件的目录', 'Please specify a folder to store the plugin')
+run_download = TranslatorText('执行下载操作', 'Run download operation')
+specify_version = TranslatorText('指定一个版本, 比如2018, 2023', 'Specify a version, such as 2018, 2023')
+run_install = TranslatorText('执行安装操作', 'Run installation operation')
+run_uninstall = TranslatorText('执行卸载操作', 'Run uninstall operation')
