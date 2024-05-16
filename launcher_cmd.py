@@ -10,7 +10,7 @@ from maya_umbrella_launcher.core import (get_python_path_env, launch_maya, insta
 def main():
     parser = argparse.ArgumentParser(description=tr.command_description.text)
 
-    parser.add_argument('-p', '--path', type=str, nargs='?', const='', help=tr.specify_folder.text)
+    parser.add_argument('-p', '--path', type=str, nargs='?', const='', help=tr.no_plugin_folder.text)
     parser.add_argument('-d', '--download', action='store_true', help=tr.run_download.text)
     parser.add_argument('-s', '--start', type=int, help=tr.specify_version.text)
     parser.add_argument('-i', '--install', type=int, help=tr.run_install.text)

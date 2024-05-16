@@ -56,7 +56,7 @@ class MainUI(CommonWidget):
         self.setWindowIcon(MIcon(r'./resource/app_umbrella.ico'))
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
-        self.resize(800, 600)
+        self.resize(520, 400)
 
         theme = dy.MTheme(theme='dark')
         theme.apply(self)
@@ -127,7 +127,7 @@ class LauncherWidget(CommonWidget):
         self.setLayout(self.main_layout)
 
     def adjust_ui(self):
-        self.version_label.setFixedWidth(100)
+        self.version_label.setFixedWidth(50)
         self.launch_bt.setIcon(MPixmap('app-maya.png'))
         self.version_cb.setMaximumWidth(200)
 
@@ -202,7 +202,7 @@ class InstallerWidget(CommonWidget):
         if install_to_maya(maya_version):
             show_message(text=tr.install_success.text, typ='success', parent=self)
         else:
-            show_message(text=tr.unable_found_script.text, typ='error', parent=self)
+            show_message(text=tr.install_failed.text, typ='error', parent=self)
 
     def remove_bt_clicked(self):
         maya_version = self.version_cb.currentText()
@@ -243,7 +243,7 @@ class SettingDialog(CommonDialog):
         self.setLayout(self.main_layout)
 
     def adjust_ui(self):
-        self.resize(600, 180)
+        self.resize(450, 160)
         self.setWindowTitle('Settings Dialog')
 
     def set_data(self):

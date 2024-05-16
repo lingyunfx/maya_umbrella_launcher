@@ -42,7 +42,7 @@ def download_plugin(overwrite=False):
     # 获取插件目录
     plugin_folder = get_plugin_folder()
     if not validate_folder_exist(plugin_folder):
-        return False
+        return logger.warning(tr.no_plugin_folder.text)
 
     # 获取最新tag
     latest_tag = get_latest_release(owner=const.USER_NAME,
@@ -89,7 +89,7 @@ def get_script_folder():
     """
     plugin_folder = get_plugin_folder()
     if not validate_folder_exist(plugin_folder):
-        return False
+        return logger.warning(tr.no_plugin_folder.text)
 
     versions = get_versions(plugin_folder)
     if not versions:

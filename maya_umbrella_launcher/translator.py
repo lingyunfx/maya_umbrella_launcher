@@ -49,6 +49,7 @@ For the first use, please specify the plugin installation directory in the setti
 launcher_doc_cn = """
 选择从启动器启动Maya，不会破坏本地环境，
 启动后，会自动设置好maya_umbrella防病毒插件。
+
 (第一次使用，请先在设置面板指定插件安装目录)
 """
 
@@ -98,7 +99,6 @@ uninstall_success = TranslatorText('卸载成功', 'Uninstall successful')
 install_failed = TranslatorText('安装失败', 'Installation failed')
 
 command_description = TranslatorText('这是一个命令行模式', 'This is a command line mode')
-specify_folder = TranslatorText('请指定一个存放插件的目录', 'Please specify a folder to store the plugin')
 run_download = TranslatorText('执行下载操作', 'Run download operation')
 specify_version = TranslatorText('指定一个版本, 比如2018, 2023', 'Specify a version, such as 2018, 2023')
 run_install = TranslatorText('执行安装操作', 'Run installation operation')

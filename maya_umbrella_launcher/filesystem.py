@@ -84,7 +84,7 @@ def create_folder_if_not_exist(folder_path):
 
 
 def validate_folder_exist(folder_path):
-    if not os.path.isdir(folder_path):
+    if not folder_path or not os.path.isdir(folder_path):
         logger.warning(tr.path_not_exists.text.format(folder_path))
         return False
     return True
