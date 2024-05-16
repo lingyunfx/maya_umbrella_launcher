@@ -305,9 +305,9 @@ class SettingDialog(CommonDialog):
             self.plugin_folder = plugin_folder
             self.versions = get_versions(plugin_folder)
 
-        proxy_on = get_setting('proxy_on', default='0')
-        self.proxy_ckb.setChecked(bool(int(proxy_on)))
-        self.proxy_line.setEnabled(bool(int(proxy_on)))
+        proxy_on = get_setting('proxy_on', default='')
+        self.proxy_ckb.setChecked(bool(proxy_on))
+        self.proxy_line.setEnabled(bool(proxy_on))
         self.proxy_url = get_setting('proxy_url', default='')
         self.proxy_line.setPlaceholderText('Example: http://127.0.0.1:8889')
 
@@ -346,7 +346,8 @@ class SettingDialog(CommonDialog):
         self.update_proxy_setting()
 
     def update_proxy_setting(self):
-        set_setting('proxy_on', str(int(self.proxy_ckb.isChecked())))
+        proxy_on = '1' if self.proxy_ckb.isChecked() else ''
+        set_setting('proxy_on', proxy_on)
         set_setting('proxy_url', self.proxy_url)
 
     def translate_ui(self):
