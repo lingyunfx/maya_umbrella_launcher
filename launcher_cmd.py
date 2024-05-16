@@ -2,9 +2,9 @@ import os
 import argparse
 
 
-from maya_umbrella_launcher import translator as tr
-from maya_umbrella_launcher.core import (get_python_path_env, launch_maya, install_to_maya, set_plugin_folder,
-                                         download_plugin, get_maya_app_path, uninstall_from_maya, get_plugin_folder)
+import translator as tr
+from core import (get_python_path_env, launch_maya, install_to_maya, set_plugin_folder,
+                  download_plugin, get_maya_app_path, uninstall_from_maya, get_plugin_folder)
 
 
 def main():
