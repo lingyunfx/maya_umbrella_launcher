@@ -53,9 +53,6 @@ class CommonWidget(QtWidgets.QWidget, WidgetMixin):
 
 
 def question_box(text, parent=None):
-    """
-    显示询问框
-    """
     answer = QtWidgets.QMessageBox.question(parent,
                                             'Confirm?',
                                             text,
@@ -67,22 +64,18 @@ def question_box(text, parent=None):
     return True
 
 
-def show_message(text, duration=3.0, typ='info', parent=None):
+def show_message(text, duration=3.0, typ='info', pos_center=False, parent=None):
     """
     显示dy.MMessage消息框
     Args:
         text(unicode): 显示的消息文字
         duration(float): 显示消息的持续时间，单位为秒
         typ(str): 显示的消息框类型，支持参数有 info, success, warning, error
+        pos_center(bool): 是否显示在屏幕中央
         parent(QObject): 父级
     """
-    msg = getattr(dy.MMessage, typ)(text=text, duration=duration, parent=parent)
-    msg.show()
-
-
-def show_center_messages(text, duration=3.0, typ='info', parent=None):
-    """
-    显示dy.MToast消息框
-    """
-    msg = getattr(dy.MToast, typ)(text=text, duration=duration, parent=parent)
+    if pos_center:
+        msg = getattr(dy.MToast, typ)(text=text, duration=duration, parent=parent)
+    else:
+        msg = getattr(dy.MMessage, typ)(text=text, duration=duration, parent=parent)
     msg.show()
