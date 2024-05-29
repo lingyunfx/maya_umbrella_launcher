@@ -1,18 +1,15 @@
 import os.path
 import sys
 
+import dayu_widgets as dy
 from PySide2 import QtWidgets, QtCore
 from dayu_widgets.qt import MPixmap, MIcon
 
-import constant as const
-import dayu_widgets as dy
-import translator as tr
-from filesystem import get_installed_maya_versions, get_maya_module_folder
-from common_widgets import (CommonWidget, CommonDialog, question_box, show_message,
-                            show_center_messages)
-from core import (get_plugin_folder, set_plugin_folder, get_versions, get_plugin_latest_version,
-                  download_plugin, get_maya_app_path, launch_maya, get_python_path_env,
-                  install_to_maya, uninstall_from_maya, set_setting, get_setting)
+import maya_umbrella_launcher.constant as const
+import maya_umbrella_launcher.translator as tr
+from maya_umbrella_launcher.common_widgets import CommonWidget, CommonDialog, question_box, show_message
+from maya_umbrella_launcher.filesystem import MayaSystem
+from maya_umbrella_launcher.core import PluginManager, PluginInstaller, UserSetting
 
 
 class MainUI(CommonWidget):
@@ -21,16 +18,16 @@ class MainUI(CommonWidget):
         super(MainUI, self).__init__(parent=parent)
 
         # data
-        self.maya_versions = get_installed_maya_versions()
+        self.maya_versions = MayaSystem.get_installed_maya_versions()
 
         # widgets
         self.line_tab = dy.MLineTabWidget(alignment=QtCore.Qt.AlignLeft, parent=self)
         self.launcher_tab = LauncherWidget(parent=self)
         self.installer_tab = InstallerWidget(parent=self)
-        self.help_bt = dy.MToolButton().svg(r'./resource/help.svg').icon_only().small()
-        self.setting_bt = dy.MToolButton().svg(r'./resource/settings.svg').icon_only().small()
-        self.translate_bt = dy.MToolButton().svg(r'./resource/translate.svg').icon_only().small()
-        self.theme_bt = dy.MToolButton().svg(r'./resource/dark.svg').icon_only().small()
+        self.help_bt = dy.MToolButton().svg(r'../resource/help.svg').icon_only().small()
+        self.setting_bt = dy.MToolButton().svg(r'../resource/settings.svg').icon_only().small()
+        self.translate_bt = dy.MToolButton().svg(r'../resource/translate.svg').icon_only().small()
+        self.theme_bt = dy.MToolButton().svg(r'../resource/dark.svg').icon_only().small()
         self.div = dy.MDivider()
 
         # init ui
@@ -54,10 +51,10 @@ class MainUI(CommonWidget):
     def adjust_ui(self):
         self.line_tab.tool_button_group.set_dayu_checked(0)
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowIcon(MIcon(r'./resource/app_umbrella.ico'))
+        self.setWindowIcon(MIcon(r'../resource/app_umbrella.ico'))
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
-        main_window_size = get_setting('main_window_size')
+        main_window_size = UserSetting.get('main_window_size')
         if not main_window_size:
             self.resize(520, 400)
         else:
@@ -122,16 +119,16 @@ class MainUI(CommonWidget):
 
     @property
     def current_theme(self):
-        theme = get_setting('theme', default='dark')
+        theme = UserSetting.get('theme', default='dark')
         return theme
 
     @current_theme.setter
     def current_theme(self, value):
-        set_setting('theme', value)
+        UserSetting.set('theme', value)
 
     def closeEvent(self, event):
         size = self.size()
-        set_setting('main_window_size', (size.width(), size.height()))
+        UserSetting.set('main_window_size', (size.width(), size.height()))
 
 
 class LauncherWidget(CommonWidget):
@@ -168,20 +165,20 @@ class LauncherWidget(CommonWidget):
         if not maya_version:
             return
 
-        maya_path = get_maya_app_path(maya_version)
+        maya_path = MayaSystem.get_maya_app_path(maya_version)
         if not maya_path:
             return show_message(text=tr.unable_found_maya.text.format(maya_version),
                                 typ='error',
                                 parent=self)
 
-        envs = get_python_path_env()
+        envs = PluginManager.get_python_path_env()
         if not envs:
             return show_message(text=tr.unable_found_script.text,
                                 typ='error',
                                 parent=self
                                 )
 
-        launch_maya(maya_path, envs)
+        MayaSystem.launch_maya(maya_path, envs)
 
 
 class InstallerWidget(CommonWidget):
@@ -222,7 +219,7 @@ class InstallerWidget(CommonWidget):
 
     def version_cb_changed(self, version_number):
         if version_number:
-            mod_folder = get_maya_module_folder(version_number)
+            mod_folder = MayaSystem.get_maya_module_folder(version_number)
             mod_file = os.path.join(mod_folder, 'maya_umbrella.mod')
             self.mod_file_line.setText(mod_file)
             self.update_install_status()
@@ -232,7 +229,7 @@ class InstallerWidget(CommonWidget):
         if not maya_version:
             return
 
-        if install_to_maya(maya_version):
+        if PluginInstaller.install(maya_version):
             show_message(text=tr.install_success.text, typ='success', parent=self)
         else:
             show_message(text=tr.install_failed.text, typ='error', parent=self)
@@ -243,7 +240,7 @@ class InstallerWidget(CommonWidget):
         if not maya_version:
             return
 
-        uninstall_from_maya(maya_version)
+        PluginInstaller.uninstall(maya_version)
         show_message(text=tr.uninstall_success.text, typ='success', parent=self)
         self.update_install_status()
 
@@ -291,7 +288,7 @@ class SettingDialog(CommonDialog):
 
     def adjust_ui(self):
         # 恢复窗口大小
-        setting_window_size = get_setting('setting_window_size')
+        setting_window_size = UserSetting.get('setting_window_size')
         if not setting_window_size:
             self.resize(450, 160)
         else:
@@ -300,15 +297,15 @@ class SettingDialog(CommonDialog):
         self.setWindowTitle('Settings Dialog')
 
     def set_data(self):
-        plugin_folder = get_plugin_folder()
+        plugin_folder = UserSetting.get('plugin_folder')
         if plugin_folder:
             self.plugin_folder = plugin_folder
-            self.versions = get_versions(plugin_folder)
+            self.versions = PluginManager.get_local_version_list(plugin_folder)
 
-        proxy_on = get_setting('proxy_on', default='')
+        proxy_on = UserSetting.get('proxy_on', default='')
         self.proxy_ckb.setChecked(bool(proxy_on))
         self.proxy_line.setEnabled(bool(proxy_on))
-        self.proxy_url = get_setting('proxy_url', default='')
+        self.proxy_url = UserSetting.get('proxy_url', default='')
         self.proxy_line.setPlaceholderText('Example: http://127.0.0.1:8889')
 
     def connect_command(self):
@@ -319,8 +316,8 @@ class SettingDialog(CommonDialog):
         self.proxy_line.textChanged.connect(self.update_proxy_setting)
 
     def folder_line_changed(self):
-        set_plugin_folder(self.plugin_folder)
-        self.versions = get_versions(self.plugin_folder)
+        UserSetting.set('plugin_folder', self.plugin_folder)
+        self.versions = PluginManager.get_local_version_list(self.plugin_folder)
 
     def download_bt_clicked(self):
         self.loading_msg = dy.MToast.loading(tr.downloading.text, parent=self)
@@ -333,7 +330,7 @@ class SettingDialog(CommonDialog):
 
     def check_bt_clicked(self):
         current_latest_version = max(self.versions) if self.versions else 'v0.0.0'
-        latest_version = get_plugin_latest_version()
+        latest_version = PluginManager.get_latest_version()
         if latest_version > current_latest_version:
             if question_box(text=tr.is_download_new_version.text.format(latest_version), parent=self):
                 self.download_bt_clicked()
@@ -347,8 +344,8 @@ class SettingDialog(CommonDialog):
 
     def update_proxy_setting(self):
         proxy_on = '1' if self.proxy_ckb.isChecked() else ''
-        set_setting('proxy_on', proxy_on)
-        set_setting('proxy_url', self.proxy_url)
+        UserSetting.set('proxy_on', proxy_on)
+        UserSetting.set('proxy_url', self.proxy_url)
 
     def translate_ui(self):
         self.setting_title.setText(tr.setting_title_label.text)
@@ -363,9 +360,15 @@ class SettingDialog(CommonDialog):
         self.loading_msg.close()
         if is_success:
             self.set_data()
-            show_center_messages(text=tr.download_success.text, typ='success', parent=self)
+            show_message(text=tr.download_success.text,
+                         typ='success',
+                         pos_center=True,
+                         parent=self)
         else:
-            show_center_messages(text=tr.download_failed.text, typ='warning', parent=self)
+            show_message(text=tr.download_failed.text,
+                         typ='warning',
+                         pos_center=True,
+                         parent=self)
 
     def disable_dialog(self, is_disable=True):
         self.download_bt.setEnabled(not is_disable)
@@ -374,8 +377,9 @@ class SettingDialog(CommonDialog):
         self.version_cb.setEnabled(not is_disable)
 
     def closeEvent(self, event):
-        setting_window_size = self.size()
-        set_setting('setting_window_size', (setting_window_size.width(), setting_window_size.height()))
+        width = self.size().width()
+        height = self.size().height()
+        UserSetting.set('setting_window_size', (width, height))
 
     @property
     def plugin_folder(self):
@@ -420,7 +424,7 @@ class DownloadTask(QtCore.QThread):
         self.proxies = proxies
 
     def run(self):
-        if download_plugin(self.proxies):
+        if PluginManager.download_plugin(self.proxies):
             self.is_success_sig.emit(True)
         else:
             self.is_success_sig.emit(False)

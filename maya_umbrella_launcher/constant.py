@@ -1,4 +1,4 @@
-from __version__ import __version__
+from maya_umbrella_launcher.__version__ import __version__
 
 
 WINDOW_TITLE = f'Maya Umbrella Launcher v{__version__}'
