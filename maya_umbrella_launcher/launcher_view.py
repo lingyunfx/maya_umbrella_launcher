@@ -24,10 +24,10 @@ class MainUI(CommonWidget):
         self.line_tab = dy.MLineTabWidget(alignment=QtCore.Qt.AlignLeft, parent=self)
         self.launcher_tab = LauncherWidget(parent=self)
         self.installer_tab = InstallerWidget(parent=self)
-        self.help_bt = dy.MToolButton().svg(r'../resource/help.svg').icon_only().small()
-        self.setting_bt = dy.MToolButton().svg(r'../resource/settings.svg').icon_only().small()
-        self.translate_bt = dy.MToolButton().svg(r'../resource/translate.svg').icon_only().small()
-        self.theme_bt = dy.MToolButton().svg(r'../resource/dark.svg').icon_only().small()
+        self.help_bt = dy.MToolButton().svg(r'resource/help.svg').icon_only().small()
+        self.setting_bt = dy.MToolButton().svg(r'resource/settings.svg').icon_only().small()
+        self.translate_bt = dy.MToolButton().svg(r'resource/translate.svg').icon_only().small()
+        self.theme_bt = dy.MToolButton().svg(r'resource/dark.svg').icon_only().small()
         self.div = dy.MDivider()
 
         # init ui
@@ -51,8 +51,7 @@ class MainUI(CommonWidget):
     def adjust_ui(self):
         self.line_tab.tool_button_group.set_dayu_checked(0)
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowIcon(MIcon(r'../resource/app_umbrella.ico'))
-        QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+        self.setWindowIcon(MIcon(r'resource/app_umbrella.ico'))
 
         main_window_size = UserSetting.get('main_window_size')
         if not main_window_size:

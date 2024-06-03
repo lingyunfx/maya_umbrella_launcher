@@ -1,5 +1,5 @@
 from PySide2 import QtCore
-import constant as const
+import maya_umbrella_launcher.constant as const
 
 
 def get_language():

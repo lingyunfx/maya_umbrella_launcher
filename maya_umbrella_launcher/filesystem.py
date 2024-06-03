@@ -70,7 +70,10 @@ class MayaSystem:
 
     @staticmethod
     def launch_maya(maya_path, envs):
-        sp.Popen(maya_path, env=envs, cwd=os.path.dirname(maya_path))
+        bin_folder = os.path.dirname(maya_path)
+        qt_path = os.path.join(os.path.dirname(bin_folder), 'plugins', 'platforms')
+        envs['QT_PLUGIN_PATH'] = qt_path
+        sp.Popen(maya_path, env=envs, cwd=bin_folder)
 
 
 def extract_zip(zip_path, extract_to=None):
