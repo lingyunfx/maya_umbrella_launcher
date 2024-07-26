@@ -17,8 +17,8 @@ class UserSetting(object):
 
     @staticmethod
     def get(key, default=None):
-        setting = QtCore.QSettings(const.SETTING_FLAG, default)
-        return setting.value(key)
+        setting = QtCore.QSettings(const.SETTING_FLAG)
+        return setting.value(key, default)
 
     @staticmethod
     def set(key, value):
