@@ -1,6 +1,6 @@
 import os
 
-from PySide2 import QtCore
+from PySide6 import QtCore
 
 import maya_umbrella_launcher.translator as tr
 import maya_umbrella_launcher.constant as const

@@ -1,6 +1,6 @@
 ## maya-umbrella-launcher
 
-一个基于[maya-umbrella](https://github.com/loonghao/maya_umbrella)的Maya桌面启动器，使用Python3.9。  
+一个基于[maya-umbrella](https://github.com/loonghao/maya_umbrella)的Maya桌面启动器，使用 uv 管理 Python 3.10 环境（Windows x64）。
 
 
 ## 功能
@@ -13,7 +13,7 @@
 ## 使用说明
 
 ### 图像界面
-从release下载最新版本，解压后运行`maya_umbrela_launcher.exe`即可。
+从 release 下载 `MayaUmbrellaLauncher-版本号-Setup.exe` 安装包，安装后通过开始菜单启动。
 打开后界面长这样:
 
 <img src="https://lingyunfx-1259219315.cos.ap-beijing.myqcloud.com/pic/20240516235008.png" width="70%" height="70%">
@@ -68,14 +68,40 @@ launcher_cmd.exe -i 2018
 launcher_cmd.exe -u 2018
 ```
 
-## 第三方库
- - PySide2
- - dayu_widgets
- - requests
+## 开发运行
 
- `pip install -r requirements.txt`
- 
-## 打包
-```shell
-pyinstaller -i resource/app_umbrella.ico view.py --onefile -p .
+安装 [uv](https://docs.astral.sh/uv/getting-started/installation/) 后，在项目根目录执行：
+
+```powershell
+uv run start
+uv run launcher_cmd --help
+```
+
+uv 会自动下载 Python 3.10、创建 `.venv` 并按 `uv.lock` 同步依赖，无需手动激活环境。
+原生 uv 不支持给不带参数的 `uv run` 配置默认命令，请使用 `uv run start`。
+也可使用 `uv run python -m maya_umbrella_launcher`。
+界面使用 PySide6 / Qt 6 与 dayu-widgets 1.1.1；开发环境固定为 Python 3.10，由 uv 自动管理。
+
+## 编译和安装包
+
+在 Windows x64 安装 [Inno Setup 6 或 7](https://jrsoftware.org/isdl.php)，然后执行：
+
+```powershell
+uv run build
+```
+
+该命令先使用 Nuitka 编译图形和命令行程序，再使用 Inno Setup 生成安装包：
+`dist/MayaUmbrellaLauncher-0.1.3-Setup.exe`。
+首次构建需要网络；Nuitka 使用已有 MSVC，未找到时会下载所需编译工具。
+自定义 Inno Setup 路径可设置 `$env:ISCC = 'D:\Inno Setup 6\ISCC.exe'`。
+编译中间产物位于 `build/`。任一步失败都会停止，不会报告构建成功。
+
+安装包按当前用户安装，无需管理员权限，包含 Python、Qt、界面资源和卸载功能。
+命令行程序安装在 `cli/launcher_cmd.exe`，图形程序位于安装目录根目录。
+安装包未签名。发布前可对可执行文件与安装包进行代码签名。
+
+## 检查
+
+```powershell
+uv run python -m unittest discover -s tests
 ```

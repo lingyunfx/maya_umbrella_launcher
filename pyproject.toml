@@ -1,0 +1,30 @@
+[project]
+name = "maya-umbrella-launcher"
+version = "0.1.3"
+description = "Maya Umbrella desktop launcher"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "PySide6>=6.8,<6.11",
+    "dayu-widgets==1.1.1",
+    "requests>=2.32.3,<3",
+]
+
+[project.scripts]
+start = "maya_umbrella_launcher.launcher_view:main"
+launcher = "maya_umbrella_launcher.launcher_view:main"
+launcher_cmd = "maya_umbrella_launcher.launcher_cmd:main"
+build = "maya_umbrella_launcher.build:main"
+
+[dependency-groups]
+dev = ["Nuitka>=2.8,<3", "ordered-set>=4.1", "zstandard>=0.23"]
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["maya_umbrella_launcher"]
+
+[tool.uv]
+environments = ["sys_platform == 'win32' and platform_machine == 'AMD64'"]

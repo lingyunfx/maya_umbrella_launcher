@@ -1,15 +1,19 @@
 import os.path
 import sys
+from pathlib import Path
 
 import dayu_widgets as dy
-from PySide2 import QtWidgets, QtCore
-from dayu_widgets.qt import MPixmap, MIcon
+from PySide6 import QtWidgets, QtCore, QtGui
+from dayu_widgets.qt import MPixmap
 
 import maya_umbrella_launcher.constant as const
 import maya_umbrella_launcher.translator as tr
 from maya_umbrella_launcher.common_widgets import CommonWidget, CommonDialog, question_box, show_message
 from maya_umbrella_launcher.filesystem import MayaSystem
 from maya_umbrella_launcher.core import PluginManager, PluginInstaller, UserSetting
+
+
+RESOURCE_DIR = Path(const.__file__).resolve().parent / "resource"
 
 
 class MainUI(CommonWidget):
@@ -24,10 +28,10 @@ class MainUI(CommonWidget):
         self.line_tab = dy.MLineTabWidget(alignment=QtCore.Qt.AlignLeft, parent=self)
         self.launcher_tab = LauncherWidget(parent=self)
         self.installer_tab = InstallerWidget(parent=self)
-        self.help_bt = dy.MToolButton().svg(r'resource/help.svg').icon_only().small()
-        self.setting_bt = dy.MToolButton().svg(r'resource/settings.svg').icon_only().small()
-        self.translate_bt = dy.MToolButton().svg(r'resource/translate.svg').icon_only().small()
-        self.theme_bt = dy.MToolButton().svg(r'resource/dark.svg').icon_only().small()
+        self.help_bt = dy.MToolButton().svg(str(RESOURCE_DIR / 'help.svg')).icon_only().small()
+        self.setting_bt = dy.MToolButton().svg(str(RESOURCE_DIR / 'settings.svg')).icon_only().small()
+        self.translate_bt = dy.MToolButton().svg(str(RESOURCE_DIR / 'translate.svg')).icon_only().small()
+        self.theme_bt = dy.MToolButton().svg(str(RESOURCE_DIR / 'dark.svg')).icon_only().small()
         self.div = dy.MDivider()
 
         # init ui
@@ -51,7 +55,6 @@ class MainUI(CommonWidget):
     def adjust_ui(self):
         self.line_tab.tool_button_group.set_dayu_checked(0)
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowIcon(MIcon(r'resource/app_umbrella.ico'))
 
         main_window_size = UserSetting.get('main_window_size')
         if not main_window_size:
@@ -75,11 +78,11 @@ class MainUI(CommonWidget):
         self.translate_ui()
 
     def show_setting_dialog(self):
-        dialog = SettingDialog()
+        dialog = SettingDialog(parent=self)
         theme = dy.MTheme(theme=self.current_theme)
         theme.apply(dialog)
         theme.apply(dialog.version_cb)
-        dialog.exec_()
+        dialog.exec()
 
     def switch_language(self):
         current_language = tr.get_language()
@@ -429,8 +432,19 @@ class DownloadTask(QtCore.QThread):
             self.is_success_sig.emit(False)
 
 
-if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
+def create_application(argv):
+    app = QtWidgets.QApplication(argv)
+    # All windows, including parentless dialogs, inherit the application icon.
+    app.setWindowIcon(QtGui.QIcon(str(RESOURCE_DIR / 'app_umbrella.ico')))
+    return app
+
+
+def main():
+    app = create_application(sys.argv)
     ui = MainUI()
     ui.show()
-    app.exec_()
+    return app.exec()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
